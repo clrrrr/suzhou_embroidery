@@ -1,0 +1,32 @@
+# 输入输出文件夹
+input_imgs/
+output_files/
+
+# ME文件相关文件夹
+me_files/
+dev_me_files/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# 测试文件
+test_*.py
+check_*.py
+batch_process.py
