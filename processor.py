@@ -39,12 +39,16 @@ class EmbroideryProcessor:
         self,
         detail_level: int,       # 1（最粗）~ 100（最精细）
         mode: str = 'outline',   # 'outline' 或 'fill'
+        fill_type: str = 'tatami',  # 'tatami' 或 'simple'
+        fill_angle: int = 0,     # 填充角度 0-180
         progress_cb=None,
     ) -> List[List[Tuple[int, int]]]:
         """
         提取轮廓并简化为折线列表。
         detail_level : 1=最少线段，100=最贴近原图（线段最多）
         mode : 'outline'=仅轮廓, 'fill'=带填充
+        fill_type : 'tatami'=平行填充, 'simple'=简单填充
+        fill_angle : 填充角度（度）
         """
         if self.original_image is None:
             raise ValueError("请先加载图片")
@@ -95,7 +99,7 @@ class EmbroideryProcessor:
 
         # 5. 如果是填充模式，生成填充针迹
         if mode == 'fill':
-            self.polylines = self._generate_fill_patterns(self.polylines)
+            self.polylines = self._generate_fill_patterns(self.polylines, fill_type, fill_angle)
 
         _cb(90)
 
@@ -170,14 +174,18 @@ class EmbroideryProcessor:
     # 填充图案生成
     # ------------------------------------------------------------------
 
-    def _generate_fill_patterns(self, polylines: list) -> list:
+    def _generate_fill_patterns(self, polylines: list, fill_type: str = 'simple', fill_angle: int = 0) -> list:
         """为闭合多边形生成填充针迹"""
         from simple_fill import SimpleFillGenerator
+        from fill_generator import FillPatternGenerator
 
-        # 调整填充参数：行间距2.5像素（约0.25mm）
-        fill_gen = SimpleFillGenerator(stitch_length=20.0, row_spacing=2.5)
+        # 根据填充类型选择生成器
+        if fill_type == 'tatami':
+            fill_gen = FillPatternGenerator(stitch_length=20.0, row_spacing=2.5)
+        else:  # simple
+            fill_gen = SimpleFillGenerator(stitch_length=20.0, row_spacing=2.5)
+
         result = []
-
         closed_count = 0
         filled_count = 0
         total_count = 0
@@ -197,7 +205,10 @@ class EmbroideryProcessor:
                     if self._is_region_filled(pl):
                         filled_count += 1
                         # 生成填充
-                        fill_points = fill_gen.generate_fill(pl)
+                        if fill_type == 'tatami':
+                            fill_points = fill_gen.generate_tatami_fill(pl, angle=float(fill_angle))
+                        else:
+                            fill_points = fill_gen.generate_fill(pl, angle=float(fill_angle))
                         if fill_points:
                             result.append(fill_points)
 

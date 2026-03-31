@@ -173,6 +173,8 @@ class EmbroideryGUI:
 
         self.detail_var = tk.IntVar(value=50)
         self.mode_var = tk.StringVar(value='outline')
+        self.fill_type_var = tk.StringVar(value='tatami')
+        self.fill_angle_var = tk.IntVar(value=0)
         ttk.Scale(
             detail_lf,
             from_=1, to=100,
@@ -209,6 +211,25 @@ class EmbroideryGUI:
                        value='outline').pack(side=tk.LEFT, padx=(0, 10))
         ttk.Radiobutton(mode_frame, text="带填充", variable=self.mode_var,
                        value='fill').pack(side=tk.LEFT)
+
+        # 填充类型选择
+        fill_type_frame = ttk.LabelFrame(btn_lf, text="填充针法", padding=6)
+        fill_type_frame.pack(fill=tk.X, pady=(0, 6))
+
+        ttk.Radiobutton(fill_type_frame, text="平行填充", variable=self.fill_type_var,
+                       value='tatami').pack(anchor=tk.W)
+        ttk.Radiobutton(fill_type_frame, text="简单填充", variable=self.fill_type_var,
+                       value='simple').pack(anchor=tk.W)
+
+        # 填充角度
+        angle_frame = ttk.Frame(fill_type_frame)
+        angle_frame.pack(fill=tk.X, pady=(4, 0))
+        ttk.Label(angle_frame, text="角度:", font=("Microsoft YaHei", 8)).pack(side=tk.LEFT)
+        ttk.Scale(angle_frame, from_=0, to=180, orient=tk.HORIZONTAL,
+                 variable=self.fill_angle_var, length=120).pack(side=tk.LEFT, padx=4)
+        ttk.Label(angle_frame, textvariable=self.fill_angle_var,
+                 font=("Consolas", 8), width=3).pack(side=tk.LEFT)
+        ttk.Label(angle_frame, text="°", font=("Microsoft YaHei", 8)).pack(side=tk.LEFT)
 
         ttk.Button(
             btn_lf,
@@ -300,6 +321,8 @@ class EmbroideryGUI:
 
         detail_level = self.detail_var.get()
         mode = self.mode_var.get()
+        fill_type = self.fill_type_var.get()
+        fill_angle = self.fill_angle_var.get()
 
         def _run():
             try:
@@ -311,6 +334,8 @@ class EmbroideryGUI:
                 self.processor.process(
                     detail_level=detail_level,
                     mode=mode,
+                    fill_type=fill_type,
+                    fill_angle=fill_angle,
                     progress_cb=_cb,
                 )
 
