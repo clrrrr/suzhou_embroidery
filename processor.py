@@ -177,10 +177,10 @@ class EmbroideryProcessor:
     def _generate_fill_patterns(self, polylines: list, fill_type: str = 'simple', fill_angle: int = 0) -> list:
         """为闭合多边形生成填充针迹"""
         from simple_fill import SimpleFillGenerator
-        from fill_generator import FillPatternGenerator
 
         # 根据填充类型选择生成器
         if fill_type == 'tatami':
+            from fill_generator import FillPatternGenerator
             fill_gen = FillPatternGenerator(stitch_length=20.0, row_spacing=2.5)
         else:  # simple
             fill_gen = SimpleFillGenerator(stitch_length=20.0, row_spacing=2.5)
@@ -217,7 +217,7 @@ class EmbroideryProcessor:
             else:
                 result.append(pl)
 
-        print(f"填充统计: {closed_count} 个闭合, {filled_count} 个有填充")
+        print(f"fill stats: {closed_count} closed, {filled_count} filled")
         return result
 
     def _is_region_filled(self, polyline: list, threshold: float = 0.3) -> bool:

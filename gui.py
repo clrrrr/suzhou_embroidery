@@ -357,9 +357,9 @@ class EmbroideryGUI:
             except Exception as exc:
                 self.root.after(
                     0,
-                    lambda: (
-                        messagebox.showerror("生成失败", str(exc)),
-                        self._set_status(f"错误：{exc}", 0),
+                    lambda e=exc: (
+                        messagebox.showerror("生成失败", str(e)),
+                        self._set_status(f"错误：{e}", 0),
                     ),
                 )
 
